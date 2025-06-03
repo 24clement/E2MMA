@@ -1,0 +1,18 @@
+    <button id ="1">
+            <x>50</x>
+            <y>100</y>
+            <width>150</width>
+            <height>75</height>
+            <text>Test</text>
+            <hiden>false</hiden>
+            <color>#3465a4</color>
+            <colorText>#a6cf72</colorText>
+            <action>func_switch</action>
+            <args>
+                <arg>123</arg>
+                <arg>
+                    <type>String</type>
+                    <value>Test</value>
+                </arg>
+            </args>
+        </button>

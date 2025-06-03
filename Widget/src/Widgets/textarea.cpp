@@ -2,7 +2,7 @@
 WKeyboard* WTextArea::keyboard = nullptr;
 
 
-WTextArea::WTextArea(lv_obj_t* display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char * placeholder_text, void (*f)(lv_event_t *)) : Widget(display, Widget::widgetType::TextArea, pos_x, pos_y, size_x, size_y, hiden, text, "", ""), text(text), placeholder_text(placeholder_text), callback(f){
+WTextArea::WTextArea(lv_obj_t* display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char * placeholder_text, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::TextArea, pos_x, pos_y, size_x, size_y, hiden, text, "", ""), text(text), placeholder_text(placeholder_text), callback(f), arguments(arguments){
     
 }
 

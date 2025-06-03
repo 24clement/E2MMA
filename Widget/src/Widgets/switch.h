@@ -6,11 +6,12 @@
 class Switch : public Button{
     private:
         bool isPressed;
-        void (*callback)(lv_event_t *);
+        CallbackType callback;
+        void * arguments;
         bool isToggled;
         int colorToggled[3];
     public:
-        Switch(lv_obj_t * display = nullptr, int pos_x = 0, int pos_y = 0, int size_x = 200, int size_y = 50, bool hiden = false, const char * text = "", const char* colorInput = "#000000", const char* colorTextInput = "#000000", void (*f)(lv_event_t *) = Widget::default_func, bool toggled = false, const char * colorToggled = "#008000");
+        Switch(lv_obj_t * display = nullptr, int pos_x = 0, int pos_y = 0, int size_x = 200, int size_y = 50, bool hiden = false, const char * text = "", const char* colorInput = "#000000", const char* colorTextInput = "#000000", void (*f)(lv_event_t *, void *) = Widget::default_func, void * arguments = nullptr, bool toggled = false, const char * colorToggled = "#008000");
         void draw();
         void toggle();
         bool getToggleStatus();

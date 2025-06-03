@@ -1,6 +1,6 @@
 #include "switch.h"
 
-Switch::Switch(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char * text, const char* colorInput, const char* colorTextInput, void (*f)(lv_event_t *), bool toggled, const char * colorToggledInput) : Button(display, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput, f), isPressed(false), callback(f), isToggled(toggled){
+Switch::Switch(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char * text, const char* colorInput, const char* colorTextInput, void (*f)(lv_event_t *, void *), void * arguments, bool toggled, const char * colorToggledInput) : Button(display, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput, f, arguments), isPressed(false), callback(f), arguments(arguments), isToggled(toggled){
     setColor(colorToggledInput, colorToggled);
 }
 
@@ -48,5 +48,5 @@ void Switch::event_cb(lv_event_t * event){
     lv_event_code_t code = lv_event_get_code(event);
 
     btn->toggle();
-    btn->callback(event);
+    btn->callback(event, btn->arguments);
 }

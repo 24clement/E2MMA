@@ -4,6 +4,7 @@
 #include "Arduino.h"
 #include "../Widgets/widget.h"
 
+
 class Widget;
 
 #define MAX_WIDGETS 90
@@ -14,10 +15,13 @@ class UIE2mma {
         int widgetCount;
         static UIE2mma * instance;
         lv_obj_t * cont;
+        std::map<Widget*, void*> argsMap;
     public :
         UIE2mma() : widgetCount(0) {}
         
         void addWidget(Widget * widget);
+        void removeWidget(Widget * widget);
+        void registerArgs(Widget* widget, void* args);
         Widget** getWidgets() {return Widgets;}
         int getWidgetCount() {return widgetCount;}
 

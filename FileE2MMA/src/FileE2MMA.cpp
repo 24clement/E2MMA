@@ -6,7 +6,7 @@ static FileE2MMA * instance = nullptr;
 
 FileE2MMA::FileE2MMA(UIE2mma * ui) : ui(ui) {
 
-    usb_status_label = new Label(ui->getCont(), 275, 200, 275, 50, false, "Test", "#000000", 16);
+    usb_status_label = new Label(ui->getCont(), 275, 200, 275, 50, false, "Veuillez brancher une cle USB", "#000000", 16);
     tp_selector = new Dropdown(ui->getCont(), 275, 275, 200, 50, true, "--- Selectionner votre TP ---", dropdown_handler_func);
 
     tp_selector->draw();
@@ -173,7 +173,7 @@ void FileE2MMA::loadFile(const char* selected) {
     Serial.println("Fichier correspondant non trouve.");
 }
 
-void FileE2MMA::dropdown_handler_func(lv_event_t * event){
+void FileE2MMA::dropdown_handler_func(lv_event_t * event, void * arguments){
     const char * selected = instance->tp_selector->getCurrentItemSelected();
 
     //Ignorer le texte d'en tete

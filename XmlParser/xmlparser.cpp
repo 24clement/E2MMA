@@ -5,10 +5,20 @@
 #include <Arduino_USBHostMbed5.h>
 #include <map>
 
+struct CallbackArgsTest{
+  String id;
+  String new_text;
+};
+
 
 void XMLParser::handleLine(const String& line) {
     String trimmed = line;
     trimmed.trim();
+
+    if (trimmed.startsWith("<!--")) {
+        // Ignorer les commentaires XML
+        return;
+    }
 
     // Cas spécial : ligne complète avec balise ouvrante + texte + balise fermante
     if (trimmed.startsWith("<") && trimmed.indexOf("</") > 0) {
@@ -43,6 +53,7 @@ void XMLParser::handleLine(const String& line) {
 
 bool XMLParser::parseFromFile(const char* path) {
     registerCallback("func_switch", func_switch);
+    initTagHandlers();
     FILE* file = fopen(path, "r");
     if (!file) {
         Serial.println("Erreur d'ouverture du fichier XML.");
@@ -66,9 +77,9 @@ void XMLParser::startTag(const String& tagName, const String& attributes) {
     
     // Si nous rencontrons une balise d'un widget (ex: button, switch)
     if (tagName == "button" || tagName == "dropdown" || tagName == "label" || tagName == "led" || tagName == "rect" || tagName == "slider" || tagName == "switch" || tagName == "textarea") {
-        currentId = attributes;  // Récupérer l'ID ou d'autres attributs si nécessaire
+        currentId = getAttributeValue(attributes, "id");  // Récupérer l'ID ou d'autres attributs si nécessaire
     }
-    else if (tagName == "x" || tagName == "y" || tagName == "width" || tagName == "height" || tagName == "text" || tagName == "color" || tagName == "colortext" || tagName == "action" || tagName == "list" || tagName == "list" || tagName == "fontsize" || tagName == "toggled" || tagName == "startvalue" || tagName == "endvalue" || tagName == "index" || tagName == "colorindicator" || tagName == "colorbackground" || tagName == "colortoggled" || tagName == "placeholder") {
+    else if (tagName == "x" || tagName == "y" || tagName == "width" || tagName == "height" || tagName == "text" || tagName == "color" || tagName == "colortext" || tagName == "action" || tagName == "list" || tagName == "list" || tagName == "fontsize" || tagName == "toggled" || tagName == "startvalue" || tagName == "endvalue" || tagName == "index" || tagName == "colorindicator" || tagName == "colorbackground" || tagName == "colortoggled" || tagName == "placeholder" || tagName == "args") {
         currentSubTag = tagName; // On marque le sous-tag pour savoir quelle info nous traitons
     }
 }
@@ -77,61 +88,34 @@ void XMLParser::startTag(const String& tagName, const String& attributes) {
 
 
 void XMLParser::endTag(const String& tagName) {
-    if (tagName == "x") {
-        currentX = currentText.toInt();
-    } else if (tagName == "y") {
-        currentY = currentText.toInt();
-    } else if (tagName == "width") {
-        currentWidth = currentText.toInt();
-    } else if (tagName == "height") {
-        currentHeight = currentText.toInt();
-    } else if (tagName == "hiden") {
-        currentHiden = XMLParser::toBool(currentText);
-    } else if (tagName == "text") {
-        currentLabel = currentText;
-    } else if (tagName == "color") {
-        currentColor = currentText;
-    } else if (tagName == "colortext"){
-        currentColorText = currentText;
-    } else if (tagName == "action"){
-       if (callbackMap.count(currentText) > 0) {
-            currentCallback = callbackMap[currentText];
-        } else {
-            currentCallback = nullptr;
-            Serial.print("Callback non trouvé : ");
-            Serial.println(currentText);
-        }
-    } else if (tagName == "item" && currentSubTag == "list"){
-        Serial.println("item and subtag == list");
-        currentItemList.push_back(currentText);
-        Serial.println("Après traitement");
-    } else if (tagName == "fontsize") {
-        currentFontSize = currentText.toInt();
-    } else if (tagName == "toggled"){
-        currentToggled = XMLParser::toBool(currentText);
-    } else if (tagName == "startvalue"){
-        currentStartValue = currentText.toInt();
-    } else if (tagName == "endvalue"){
-        currentEndValue = currentText.toInt();
-    } else if (tagName == "index"){
-        currentIndex = currentText.toInt();
-    } else if (tagName == "colorindicator"){
-        currentColorIndicator = currentText;
-    } else if (tagName == "colorbackground"){
-        currentColorBackground = currentText;
-    } else if (tagName == "colortoggled") {
-        currentColorToggled = currentText;
-    } else if (tagName == "placeholder"){
-        currentPlaceHolder = currentText;
-    } else if (tagName == "button") {
-        Button* b = new Button(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentCallback);
+    Serial.print("End tag: <");
+    Serial.print(tagName);
+    Serial.println(">");
+
+
+    auto it = tagHandlers.find(tagName);
+    if (it != tagHandlers.end()) {
+        // Appelle le handler avec currentText
+        it->second(currentText);
+        return;
+    }
+
+    if (tagName == "args"){
+        inArgs = false;
+    }
+
+    if (tagName == "button") {
+        auto* argsCopy = new std::vector<String>(currentArgs);
+        Button* b = new Button(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentCallback, (void*)argsCopy);
         b->draw();
+        ui->registerArgs(b, argsCopy);
         if (!currentId.isEmpty()) {
             buttonMap[currentId] = b;
         }
         resetCurrentVars();
     } else if (tagName == "dropdown") {
-        Dropdown* d = new Dropdown(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, "", currentCallback);
+        auto argsCopy = new std::vector<String>(currentArgs);
+        Dropdown* d = new Dropdown(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, "", currentCallback, (void*)argsCopy);
         d->draw();
         for (const auto& item : currentItemList){
             d->addItemToList(item);
@@ -162,21 +146,24 @@ void XMLParser::endTag(const String& tagName) {
         }
         resetCurrentVars();
     } else if (tagName == "slider") {
-        Slider* s = new Slider(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentStartValue, currentEndValue, currentIndex, currentColorIndicator.c_str(), currentColorBackground.c_str(), currentCallback);
+        auto* argsCopy = new std::vector<String>(currentArgs);
+        Slider* s = new Slider(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentStartValue, currentEndValue, currentIndex, currentColorIndicator.c_str(), currentColorBackground.c_str(), currentCallback, (void*)argsCopy);
         s->draw();
         if (!currentId.isEmpty()) {
             sliderMap[currentId] = s;
         }
         resetCurrentVars(); 
     } else if (tagName == "switch") {
-        Switch * s = new Switch(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentCallback, currentToggled, currentColorToggled.c_str());
+        auto* argsCopy = new std::vector<String>(currentArgs);
+        Switch * s = new Switch(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentCallback, (void*)argsCopy, currentToggled, currentColorToggled.c_str());
         s->draw();
         if (!currentId.isEmpty()) {
             switchMap[currentId] = s;
         }
         resetCurrentVars();
     } else if (tagName == "textarea") {
-        WTextArea * t = new WTextArea(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentPlaceHolder.c_str(), currentCallback);
+        auto argsCopy = new std::vector<String>(currentArgs);
+        WTextArea * t = new WTextArea(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentPlaceHolder.c_str(), currentCallback, (void*)argsCopy);
         t->draw();
         if (!currentId.isEmpty()) {
             textareaMap[currentId] = t;
@@ -193,9 +180,50 @@ void XMLParser::resetCurrentVars() {
     currentText = "";
     currentSubTag = "";
     currentCallback = nullptr;  // aussi si tu utilises cette variable
+    currentArgName = "";
     currentItemList.clear();
+    currentArgs.clear();
 }
 
+void XMLParser::initTagHandlers() {
+    tagHandlers["x"] = [&](const String& val) { currentX = val.toInt(); };
+    tagHandlers["y"] = [&](const String& val) { currentY = val.toInt(); };
+    tagHandlers["width"] = [&](const String& val) { currentWidth = val.toInt(); };
+    tagHandlers["height"] = [&](const String& val) { currentHeight = val.toInt(); };
+    tagHandlers["hiden"] = [&](const String& val) { currentHiden = toBool(val); };
+    tagHandlers["text"] = [&](const String& val) { currentLabel = val; };
+    tagHandlers["color"] = [&](const String& val) { currentColor = val; };
+    tagHandlers["colortext"] = [&](const String& val) { currentColorText = val; };
+    tagHandlers["action"] = [&](const String& val) {
+        if (callbackMap.count(val)) currentCallback = callbackMap[val];
+        else {
+            currentCallback = nullptr;
+            Serial.print("Callback non trouvé : ");
+            Serial.println(val);
+        }
+    };
+    tagHandlers["fontsize"] = [&](const String& val) { currentFontSize = val.toInt(); };
+    tagHandlers["toggled"] = [&](const String& val) { currentToggled = toBool(val); };
+    tagHandlers["startvalue"] = [&](const String& val) { currentStartValue = val.toInt(); };
+    tagHandlers["endvalue"] = [&](const String& val) { currentEndValue = val.toInt(); };
+    tagHandlers["index"] = [&](const String& val) { currentIndex = val.toInt(); };
+    tagHandlers["colorindicator"] = [&](const String& val) { currentColorIndicator = val; };
+    tagHandlers["colorbackground"] = [&](const String& val) { currentColorBackground = val; };
+    tagHandlers["colortoggled"] = [&](const String& val) { currentColorToggled = val; };
+    tagHandlers["placeholder"] = [&](const String& val) { currentPlaceHolder = val; };
+    tagHandlers["item"] = [&](const String& val) {
+        if (currentSubTag == "list") {
+            currentItemList.push_back(val);
+        }
+    };
+    tagHandlers["arg"] = [&](const String& val){
+        if (currentSubTag == "args"){
+            currentArgs.push_back(val);
+        }
+    };
+}
+
+std::map<String, Button*> XMLParser::buttonMap;
 
 
 void XMLParser::textData(const String& text) {
@@ -210,6 +238,26 @@ bool XMLParser::toBool(const String& str){
     return lower == "true" || lower == "1";
 }
 
-void XMLParser::func_switch(lv_event_t * event){
-    Serial.println("Switch Activé");
+String XMLParser::getAttributeValue(const String& attributes, const String& key) {
+    String pattern = key + "=\"";
+    int keyStart = attributes.indexOf(key);
+
+    if (keyStart == -1) return "";
+
+    int quoteStart = attributes.indexOf('"', keyStart);
+    if (quoteStart == -1) return "";
+
+    int quoteEnd = attributes.indexOf('"', quoteStart + 1);
+    if (quoteEnd == -1) return "";
+
+    return attributes.substring(quoteStart + 1, quoteEnd);
+}
+
+
+
+void XMLParser::func_switch(lv_event_t * event, void * args){
+    std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
+    auto& argsRef = *cbArgs;
+
+    UIE2mma::getInstance()->removeWidget(buttonMap[argsRef[0]]);
 }

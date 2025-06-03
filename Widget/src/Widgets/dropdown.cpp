@@ -1,6 +1,6 @@
 #include "dropdown.h"
 
-Dropdown::Dropdown(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char * list, void (*f)(lv_event_t *)) : Widget(display, Widget::widgetType::Dropdown, pos_x, pos_y, size_x, size_y, hiden), list(list), callback(f){
+Dropdown::Dropdown(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char * list, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::Dropdown, pos_x, pos_y, size_x, size_y, hiden), list(list), callback(f), arguments(arguments){
 
 }
 
@@ -40,6 +40,6 @@ void Dropdown::event_cb(lv_event_t * event){
         char buf[64];
         lv_dropdown_get_selected_str(obj, buf, sizeof(buf));
         dd->current_item_selected = buf;
-        dd->callback(event);
+        dd->callback(event, dd->arguments);
     }
 }

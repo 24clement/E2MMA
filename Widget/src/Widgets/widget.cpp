@@ -23,6 +23,20 @@ void Widget::addObj(lv_obj_t * new_obj){
     }
 }
 
+void Widget::removeObj(int index){
+        if (index < 0 || index >= objectsCount || objects[index] == nullptr) return;
+
+    // Supprimer l'objet LVGL
+    lv_obj_del(objects[index]);
+
+    // Décaler les objets restants
+    for (int i = index; i < objectsCount - 1; ++i) {
+        objects[i] = objects[i + 1];
+    }
+
+    objects[--objectsCount] = nullptr;
+}
+
 void Widget::hide(bool new_status){
     this->hiden = new_status;
     

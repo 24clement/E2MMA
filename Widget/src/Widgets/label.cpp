@@ -9,6 +9,10 @@ static const lv_font_t * convertFont(int font_size){
         return &lv_font_montserrat_16;
     }
     
+    int index = (font_size - 12) / 2;
+    if (index < 0) index = 0;
+    if (index > 18) index = 18;
+
     const lv_font_t *font_array[] = {
         &lv_font_montserrat_12, &lv_font_montserrat_14, &lv_font_montserrat_16,
         &lv_font_montserrat_18, &lv_font_montserrat_20, &lv_font_montserrat_22,
@@ -19,14 +23,14 @@ static const lv_font_t * convertFont(int font_size){
         &lv_font_montserrat_48
     };
 
-    return font_array[(font_size - 12) / 2];
+    return font_array[index];
 }
 
 void Label::draw(){
     lv_style_t * temp_style = this->getStyle();
-    lv_style_init(temp_style);
     lv_style_set_text_color(temp_style, lv_color_make(this->getColorR(), this->getColorG(), this->getColorB()));
     lv_style_set_text_font(temp_style, convertFont(font_size));
+
 
     lv_obj_t* label = lv_label_create(display);
     lv_label_set_text(label, this->getText());

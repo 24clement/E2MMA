@@ -1,6 +1,6 @@
 #include "slider.h"
 
-Slider::Slider(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char* colorInput, const char* colorTextInput, int start_value, int end_value, int index, const char* colorIndicatorInput, const char* colorBackgroundInput, void (*f)(lv_event_t *)) : Widget(display, Widget::widgetType::Slider, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput), start_value(start_value), end_value(end_value), index(index), callback(f) {
+Slider::Slider(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char* colorInput, const char* colorTextInput, int start_value, int end_value, int index, const char* colorIndicatorInput, const char* colorBackgroundInput, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::Slider, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput), start_value(start_value), end_value(end_value), index(index), callback(f), arguments(arguments) {
     setColor(colorIndicatorInput, colorIndicator);
     setColor(colorBackgroundInput, colorBackground);
 }
@@ -57,6 +57,6 @@ void Slider::event_cb(lv_event_t * event){
 
     slider->index = lv_slider_get_value(target_slider);
 
-    slider->callback(event);
+    slider->callback(event, slider->arguments);
 
 }

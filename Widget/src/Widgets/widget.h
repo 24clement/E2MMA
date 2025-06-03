@@ -9,16 +9,18 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <map>
+#include <vector>
 #include "../UIE2mma/UIE2mma.h"
 
 #define MAX_OBJ 10
-
 
 class Widget
 {
 public: 
     enum widgetType {Default, PushButton, Switch, Slider, Led, TextArea, Label, Keyboard, Dropdown};
     lv_obj_t* display;
+    typedef void (*CallbackType)(lv_event_t*, void*);
 private:
     widgetType type;
     Point position;
@@ -40,6 +42,7 @@ public:
     double getSizeX() {return size_x;}
     double getSizeY() {return size_y;}
     void addObj(lv_obj_t * new_obj);
+    void removeObj(int index);
     lv_obj_t** getObjects() {return objects;}
     int getObjectCount() {return objectsCount;}
     void hide(bool change_status = true);
@@ -54,7 +57,7 @@ public:
     int getColorTextG() {return colorText[1];}
     int getColorTextB() {return colorText[2];}
     lv_style_t* getStyle() {return &style;}
-    static void default_func(lv_event_t *) {}
+    static void default_func(lv_event_t * e, void * arguments) {}
 };
 
 

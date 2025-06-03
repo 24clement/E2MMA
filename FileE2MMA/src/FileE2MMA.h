@@ -30,7 +30,7 @@ private:
 
     void listFiles(const char* dirPath, unsigned int& count);
     void loadFile(const char* filename);
-    static void dropdown_handler_func(lv_event_t * event);
+    static void dropdown_handler_func(lv_event_t * event, void * arguments);
 
 public:
     FileE2MMA(UIE2mma * ui);
