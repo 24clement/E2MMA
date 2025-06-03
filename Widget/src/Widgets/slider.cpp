@@ -57,6 +57,7 @@ void Slider::event_cb(lv_event_t * event){
 
     slider->index = lv_slider_get_value(target_slider);
 
-    slider->callback(event, slider->arguments);
-
+    if (slider->callback != nullptr){
+        slider->callback(event, slider->arguments);
+    }
 }

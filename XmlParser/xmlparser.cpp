@@ -5,11 +5,10 @@
 #include <Arduino_USBHostMbed5.h>
 #include <map>
 
-struct CallbackArgsTest{
-  String id;
-  String new_text;
-};
-
+XMLParser& XMLParser::getInstance() {
+    static XMLParser instance;
+    return instance;
+}
 
 void XMLParser::handleLine(const String& line) {
     String trimmed = line;
@@ -52,11 +51,12 @@ void XMLParser::handleLine(const String& line) {
 
 
 bool XMLParser::parseFromFile(const char* path) {
-    registerCallback("func_switch", func_switch);
     initTagHandlers();
     FILE* file = fopen(path, "r");
     if (!file) {
-        Serial.println("Erreur d'ouverture du fichier XML.");
+        if (PARSERDEBUG){
+            Serial.println("Erreur d'ouverture du fichier XML.");
+        }
         return false;
     }
 
@@ -70,11 +70,13 @@ bool XMLParser::parseFromFile(const char* path) {
 }
 
 void XMLParser::startTag(const String& tagName, const String& attributes) {
-    Serial.print("Start tag: <");
-    Serial.print(tagName);
-    Serial.print("> avec attributs: ");
-    Serial.println(attributes);
-    
+    if (PARSERDEBUG){
+        Serial.print("Start tag: <");
+        Serial.print(tagName);
+        Serial.print("> avec attributs: ");
+        Serial.println(attributes);
+    }
+        
     // Si nous rencontrons une balise d'un widget (ex: button, switch)
     if (tagName == "button" || tagName == "dropdown" || tagName == "label" || tagName == "led" || tagName == "rect" || tagName == "slider" || tagName == "switch" || tagName == "textarea") {
         currentId = getAttributeValue(attributes, "id");  // Récupérer l'ID ou d'autres attributs si nécessaire
@@ -88,9 +90,12 @@ void XMLParser::startTag(const String& tagName, const String& attributes) {
 
 
 void XMLParser::endTag(const String& tagName) {
-    Serial.print("End tag: <");
-    Serial.print(tagName);
-    Serial.println(">");
+    if(PARSERDEBUG) {
+        Serial.print("End tag: <");
+        Serial.print(tagName);
+        Serial.println(">");
+    }
+
 
 
     auto it = tagHandlers.find(tagName);
@@ -117,6 +122,7 @@ void XMLParser::endTag(const String& tagName) {
         auto argsCopy = new std::vector<String>(currentArgs);
         Dropdown* d = new Dropdown(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, "", currentCallback, (void*)argsCopy);
         d->draw();
+        ui->registerArgs(d, argsCopy);
         for (const auto& item : currentItemList){
             d->addItemToList(item);
         }
@@ -149,6 +155,7 @@ void XMLParser::endTag(const String& tagName) {
         auto* argsCopy = new std::vector<String>(currentArgs);
         Slider* s = new Slider(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentStartValue, currentEndValue, currentIndex, currentColorIndicator.c_str(), currentColorBackground.c_str(), currentCallback, (void*)argsCopy);
         s->draw();
+        ui->registerArgs(s, argsCopy);
         if (!currentId.isEmpty()) {
             sliderMap[currentId] = s;
         }
@@ -157,6 +164,7 @@ void XMLParser::endTag(const String& tagName) {
         auto* argsCopy = new std::vector<String>(currentArgs);
         Switch * s = new Switch(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentColor.c_str(), currentColorText.c_str(), currentCallback, (void*)argsCopy, currentToggled, currentColorToggled.c_str());
         s->draw();
+        ui->registerArgs(s, argsCopy);
         if (!currentId.isEmpty()) {
             switchMap[currentId] = s;
         }
@@ -165,6 +173,7 @@ void XMLParser::endTag(const String& tagName) {
         auto argsCopy = new std::vector<String>(currentArgs);
         WTextArea * t = new WTextArea(ui->getCont(), currentX, currentY, currentWidth, currentHeight, currentHiden, currentLabel.c_str(), currentPlaceHolder.c_str(), currentCallback, (void*)argsCopy);
         t->draw();
+        ui->registerArgs(t, argsCopy);
         if (!currentId.isEmpty()) {
             textareaMap[currentId] = t;
         }
@@ -198,8 +207,10 @@ void XMLParser::initTagHandlers() {
         if (callbackMap.count(val)) currentCallback = callbackMap[val];
         else {
             currentCallback = nullptr;
-            Serial.print("Callback non trouvé : ");
-            Serial.println(val);
+            if (PARSERDEBUG){
+                Serial.print("Callback non trouvé : ");
+                Serial.println(val);
+            }
         }
     };
     tagHandlers["fontsize"] = [&](const String& val) { currentFontSize = val.toInt(); };
@@ -223,13 +234,13 @@ void XMLParser::initTagHandlers() {
     };
 }
 
-std::map<String, Button*> XMLParser::buttonMap;
-
-
 void XMLParser::textData(const String& text) {
     currentText = text;
-    Serial.print("Texte: ");
-    Serial.println(text);
+    if (PARSERDEBUG){
+        Serial.print("Texte: ");
+        Serial.println(text);
+    }
+    
 }
 
 bool XMLParser::toBool(const String& str){
@@ -251,13 +262,4 @@ String XMLParser::getAttributeValue(const String& attributes, const String& key)
     if (quoteEnd == -1) return "";
 
     return attributes.substring(quoteStart + 1, quoteEnd);
-}
-
-
-
-void XMLParser::func_switch(lv_event_t * event, void * args){
-    std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
-    auto& argsRef = *cbArgs;
-
-    UIE2mma::getInstance()->removeWidget(buttonMap[argsRef[0]]);
 }

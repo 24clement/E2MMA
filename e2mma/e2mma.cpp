@@ -2,11 +2,15 @@
 
 #include "e2mma.h"
 
-E2MMA::E2MMA()
+E2MMA* globalE2MMAInstance = nullptr;
+
+E2MMA::E2MMA(FileE2MMA * FileManager)
     : kp(1.0), ki(0.0), kd(0.0),
       consigne(0), integrale(0.0), derniereErreur(0.0), sortieCommande(0.0),
       limiteIntegrale(1000.0),
-      periodeEchantillonnage(100), dernierTemps(0) {}
+      periodeEchantillonnage(100), dernierTemps(0), FileManager(FileManager) {
+        globalE2MMAInstance = this;
+      }
 
 void E2MMA::setup() {
     pinMode(PWM3, OUTPUT);
@@ -20,6 +24,9 @@ void E2MMA::setup() {
     analogWrite(PWM3, 0);
     analogWrite(PWM4, 0);
 
+    XMLParser::getInstance().registerCallback("incr_slider", incr_slider);
+    XMLParser::getInstance().registerCallback("decr_slider", decr_slider);
+    XMLParser::getInstance().registerCallback("func_default", func_default);
 
 
 }
@@ -110,31 +117,54 @@ void E2MMA::initialiserSortie() {
     digitalWrite(VMOINS, LOW);
 }
 
+void E2MMA::func_default(lv_event_t *event, void * args) {}
+
 void E2MMA::incr_slider(lv_event_t *event, void * args) {
+    Serial.println("Debut de fonction");
+    if (args == nullptr) {
+        Serial.println("Argument null"); 
+        return;
+    } else {
+        Serial.println("Argument non null");
+    }
     std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
     auto& argsRef = *cbArgs;
-    Slider * temp_slider = sliderMap[argsRef[0]];
-    temp_slider->setIndex(temps_slider->getIndex() + argsRef[1])
+    Slider * temp_slider = XMLParser::getInstance().getSliderMap()[argsRef[0]];
+    if (!temp_slider){
+        Serial.println("Slider null");
+        return;
+    } else {
+        Serial.println("Slider non null");
+    }
+    temp_slider->setIndex(temp_slider->getIndex() + argsRef[1].toInt());
+    Serial.println("Fin de fonction");
 }
 
-void E2MMA::set_slider_by_textarea(lv_event_t *event) {
+void E2MMA::decr_slider(lv_event_t *event, void * args) {
     std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
     auto& argsRef = *cbArgs;
-    WTextArea * temp_text = textareaMap[argsRef[0]];
+    Slider * temp_slider = XMLParser::getInstance().getSliderMap()[argsRef[0]];
+    temp_slider->setIndex(temp_slider->getIndex() - argsRef[1].toInt());
+}
+
+/*void E2MMA::set_slider_by_textarea(lv_event_t *event, void * args) {
+    std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
+    auto& argsRef = *cbArgs;
+    WTextArea * temp_text = FileManager->getTextAreaMap()[argsRef[0]];
     temp_text->setIndex(temps_slider->getIndex() + argsRef[1])
 }
 
 void E2MMA::incr_label(lv_event_t *event, void * args) {
     std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
     auto& argsRef = *cbArgs;
-    Label * temp_label = labelMap[argsRef[0]];
+    Label * temp_label = FileManager->getLabelMap()[argsRef[0]];
     temp_label->setText(([argsRef[1]] + String([argsRef[2]], [argsRef[3]])).c_str());
 
-}
+}*/
 
-void E2MMA::set_slider_by_button(lv_event_t *event, void * args) {
+/*void E2MMA::set_slider_by_button(lv_event_t *event, void * args) {
     std::vector<String>* cbArgs = static_cast<std::vector<String>*>(args);
     auto& argsRef = *cbArgs;
-    Button * temp_button = buttonMap[argsRef[0]];
+    Button * temp_slider = getButtonMap()[argsRef[0]];
     temp_slider->setIndex(temps_slider->getIndex() + argsRef[1])
-}
+}*/

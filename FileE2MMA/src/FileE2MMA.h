@@ -1,5 +1,6 @@
 #ifndef FILEE2MMA_H
 #define FILEE2MMA_H
+#define FILEDEBUG 0
 
 #include <Arduino.h>
 #include <widgets.h>
@@ -18,8 +19,6 @@ private:
     Label* usb_status_label;
     Dropdown* tp_selector;
 
-    XMLParser parser;
-
     bool usb_connected = false;
     bool usb_mounted = false;
     unsigned long connect_timer = 0;
@@ -36,6 +35,7 @@ public:
     FileE2MMA(UIE2mma * ui);
     void update();
     bool IsUSBMounted() {return usb_mounted;}
+    
 };
 
 #endif

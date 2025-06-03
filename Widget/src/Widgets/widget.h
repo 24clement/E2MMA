@@ -1,5 +1,6 @@
 #ifndef WIDGET_SRC_H
 #define WIDGET_SRC_H
+#define WIDGETDEBUG 0
 
 #include "Arduino.h"
 #include "point.h"

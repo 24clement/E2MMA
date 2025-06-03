@@ -1,5 +1,6 @@
 #ifndef XMLPARSER_H
 #define XMLPARSER_H
+#define PARSERDEBUG 0
 
 #include <Arduino.h>
 #include <vector>
@@ -12,12 +13,23 @@ using TagHandler = std::function<void(const String&)>;
 
 class XMLParser {
 public:
-    XMLParser() = default;
+    static XMLParser& getInstance();
+
     void setUI(UIE2mma* u) { ui = u; }
     UIE2mma * getUI() {return ui;}
     bool parseFromFile(const char* path);
-    void registerCallback(const String& name, void(*func)(lv_event_t*, void *)) {callbackMap[name] = func;}
+    void registerCallback(const String& name, void(*func)(lv_event_t*, void *)) { callbackMap[name] = func; if (PARSERDEBUG){ Serial.println(String("Callback enregistré : ") + name); }}
+
+    std::map<String, Button*> getButtonMap() {return buttonMap;}    
+    std::map<String, Dropdown*> getDropdownMap() {return dropdownMap;}    
+    std::map<String, Label*> getLabelMap() {return labelMap;}    
+    std::map<String, Led*> getLedMap() {return ledMap;}    
+    std::map<String, Rect*> getRectMap() {return rectMap;}    
+    std::map<String, Slider*> getSliderMap() {return sliderMap;}    
+    std::map<String, Switch*> getSwitchMap() {return switchMap;}    
+    std::map<String, WTextArea*> getTextAreaMap() {return textareaMap;}    
 private:
+    XMLParser() = default;
     UIE2mma* ui = nullptr;
     void handleLine(const String& line);
     void startTag(const String& tagName, const String& attributes);
@@ -37,7 +49,7 @@ private:
     std::vector<String> currentArgs;
     bool inArgs = false;
     String currentArgName = "";
-    static std::map<String, Button*> buttonMap;
+    std::map<String, Button*> buttonMap;
     std::map<String, Dropdown*> dropdownMap;
     std::map<String, Label*> labelMap;
     std::map<String, Led*> ledMap;
@@ -45,7 +57,6 @@ private:
     std::map<String, Slider*> sliderMap;
     std::map<String, Switch*> switchMap;
     std::map<String, WTextArea*> textareaMap;
-
     std::map<String, void(*)(lv_event_t*, void *)> callbackMap;
     void (*currentCallback)(lv_event_t*, void *) = nullptr;
 };

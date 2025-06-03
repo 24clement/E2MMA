@@ -1,5 +1,6 @@
 #ifndef UIE2MMA_H
 #define UIE2MMA_H
+#define UIE2MMADEBUG 0
 
 #include "Arduino.h"
 #include "../Widgets/widget.h"

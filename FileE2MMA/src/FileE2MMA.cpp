@@ -20,9 +20,12 @@ FileE2MMA::FileE2MMA(UIE2mma * ui) : ui(ui) {
     usb = new mbed::FATFileSystem("usb");
     msd = new USBHostMSD();
     
-    parser.setUI(ui);
+    XMLParser::getInstance().setUI(ui);
 
-    Serial.println("Systeme pret");
+    if (FILEDEBUG){
+        Serial.println("Systeme pret");
+    }
+
     xmlPathCount = 0;
     instance = this;
 
@@ -38,7 +41,9 @@ void FileE2MMA::update() {
         usb_connected = true;
         usb_mounted = false;
         connect_timer = millis();
-        Serial.println("USB detectee, en attente ...");
+        if (FILEDEBUG){
+            Serial.println("USB detectee, en attente ...");
+        }
         usb_status_label->setText("Lecture de cle USB en cours ...");
     }
 
@@ -49,7 +54,9 @@ void FileE2MMA::update() {
         if (usb_mounted){
             usb->unmount();
             usb_mounted = false;
-            Serial.println("Cle USB demontee proprement");
+            if (FILEDEBUG){
+                Serial.println("Cle USB demontee proprement");
+            }
         }
 
         delete msd;
@@ -72,7 +79,10 @@ void FileE2MMA::update() {
             Serial.println(err);
         } else {
             usb_mounted = true;
-            Serial.println("Cle USB montee avec succes.");
+            if (FILEDEBUG){
+                Serial.println("Cle USB montee avec succes.");
+            }
+
 
             //Lecture des fichiers present sur la cle USB
             xmlPathCount = 0;
@@ -80,7 +90,9 @@ void FileE2MMA::update() {
             DIR * d = opendir("/usb/");
             if (!d){
                 snprintf(buf, sizeof(buf), "Erreur ouverture dir : %s", strerror(errno));
-                Serial.println(buf);
+                if (FILEDEBUG){
+                    Serial.println(buf);
+                }
                 usb_status_label->setText("Erreur lecture fichiers");
                 return;
             }
@@ -112,7 +124,9 @@ void FileE2MMA::listFiles(const char* dirPath, unsigned int& count) {
     DIR* d = opendir(dirPath);
     if (!d){
         snprintf(buf, sizeof(buf), "Erreur ouverture repertoire : %s", strerror(errno));
-        Serial.println(buf);
+        if (FILEDEBUG){
+            Serial.println(buf);
+        }
         return;
     }
 
@@ -133,8 +147,10 @@ void FileE2MMA::listFiles(const char* dirPath, unsigned int& count) {
                 tp_selector->addItemToList(e->d_name);
                 xmlPathCount++;
                 count++;
-                Serial.print("Fichier XML trouve : ");
-                Serial.println(fullPath);
+                if (FILEDEBUG){
+                    Serial.print("Fichier XML trouve : ");
+                    Serial.println(fullPath);
+                }
             }
         }
     }
@@ -148,29 +164,38 @@ void FileE2MMA::loadFile(const char* selected) {
         else filename = xmlPaths[i];
 
         if (strcmp(filename, selected) == 0) {
-            Serial.print("Chargement du fichier : ");
-            Serial.println(xmlPaths[i]);
+            if (FILEDEBUG){
+                Serial.print("Chargement du fichier : ");
+                Serial.println(xmlPaths[i]);
+            }
 
             FILE* file = fopen(xmlPaths[i], "r");
             if (!file) {
-                Serial.println("Erreur ouverture fichier XML selectionne");
+                if (FILEDEBUG){
+                    Serial.println("Erreur ouverture fichier XML selectionne");
+                }
                 return;
             }
 
-            if (parser.parseFromFile(xmlPaths[i])) {
+            if (XMLParser::getInstance().parseFromFile(xmlPaths[i])) {
                 usb_status_label->hide(true);
                 tp_selector->hide(true);
-                Serial.println("Parsing termine");
+                if (FILEDEBUG){
+                    Serial.println("Parsing termine");
+                }
             } else {
-                Serial.println("Erreur de parsing du fichier");
+                if (FILEDEBUG){
+                    Serial.println("Erreur de parsing du fichier");
+                }
             }
 
             fclose(file);
             return;
         }
     }
-
-    Serial.println("Fichier correspondant non trouve.");
+    if (FILEDEBUG){
+        Serial.println("Fichier correspondant non trouve.");
+    }
 }
 
 void FileE2MMA::dropdown_handler_func(lv_event_t * event, void * arguments){
