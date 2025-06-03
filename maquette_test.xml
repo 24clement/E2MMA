@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eemma version="0.1"?>
+
+<model ref = "VEL1" >
+<title>VEL1</title>
+
+    <!--Définition des entrées et sorties de la maquette VEL1-->
+    
+    <io description="Input/output VEL1">
+        <!--sortie numérique permettant de controler le vérin-->
+        <tor id=1>
+            <vcc>5.0</vcc>
+            <type>PWM</type>
+            <name>Extension vérin</name>
+        </tor>
+        <tor id=2>
+            <vcc>5.0</vcc>
+            <type>PWM</type>
+            <name>Rétraction vérin</name>
+        </tor>
+        <!--entrée analogique permettant de mesurer la position exacte du vérin-->
+        <ana id=3>
+            <vcc>5.0</vcc>
+            <name>Capteur position</name>
+        </ana>
+        <!--entrée analogique permettant d'indiquer la vitesse de rotation du moteur-->
+        <ana id=5>
+            <vcc>5.0</vcc>
+            <name>retour tachy</name>
+        </ana>
+        
+
+    </io>
+    
+    <!--interface utilisateur-->
+    <ui>
+        <!--bouton extension vérin-->
+        <button id ="1">
+            <x>50</x>
+            <y>100</y>
+            <width>150</width>
+            <height>75</height>
+            <text>Test</text>
+            <hiden>false</hiden>
+            <color>#3465a4</color>
+            <colorText>#a6cf72</colorText>
+            <action>func_switch</action>
+        </button>
+        <switch id ="1">
+            <x>250</x>
+            <y>100</y>
+            <width>150</width>
+            <height>50</height>
+            <text>Test</text>
+            <hiden>false</hiden>
+            <color>#3465a4</color>
+            <colortext>#000000</colortext>
+            <action>func_switch</action>
+            <args>
+                <arg>1</arg>
+                <arg>Nouveau Texte</arg>
+            </args>
+            <toggled>true</toggled>
+            <colortoggled>#90EE90</colortoggled>
+        </switch>
+        <dropdown id ="1">
+            <x>450</x>
+            <y>100</y>
+            <width>150</width>
+            <height>50</height>
+            <text>Test</text>
+            <hiden>false</hiden>
+            <action>func_switch</action>
+            <list>
+                <item>Test</item>
+                <item>Test</item>
+                <item>Test</item>
+            </list>
+        </dropdown>
+        <label id ="1">
+            <x>50</x>
+            <y>200</y>
+            <width>100</width>
+            <height>50</height>
+            <hiden>false</hiden>
+            <text>Test</text>
+            <color>255, 0, 0</color>
+            <fontsize>16</fontsize>
+        </label>
+        <led id ="1">
+            <x>250</x>
+            <y>200</y>
+            <width>75</width>
+            <height>75</height>
+            <hiden>false</hiden>
+            <text>Test</text>
+            <color>255, 0, 255</color>
+            <colortext>0,0,0</colortext>
+            <toggled>true</toggled>
+        </led>
+        <rect id ="1">
+            <x>450</x>
+            <y>200</y>
+            <width>100</width>
+            <height>100</height>
+            <hiden>false</hiden>
+            <color>255, 0, 255</color>
+        </rect>
+        <slider id ="1">
+            <x>50</x>
+            <y>300</y>
+            <width>150</width>
+            <height>50</height>
+            <hiden>false</hiden>
+            <text>Test</text>
+            <color>0, 0, 255</color>
+            <colortext>0, 0, 0</colortext>
+            <startvalue>1</startvalue>
+            <endvalue>256</endvalue>
+            <index>128</index>
+            <colorindicator>0,0,255</colorindicator>
+            <colorbackground>128,128,128</colorbackground>
+            <action>func_switch</action>
+        </slider>
+        <textarea id ="1">
+            <x>250</x>
+            <y>300</y>
+            <width>100</width>
+            <height>50</height>
+            <hiden>false</hiden>
+            <text>Test</text>
+            <color>0, 0, 255</color>
+            <placeholder>Autre</placeholder>
+            <action>func_switch</action>
+        </textarea>  
+    </ui>
+</model>
