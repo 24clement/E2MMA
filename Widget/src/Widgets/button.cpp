@@ -1,6 +1,6 @@
 #include "button.h"
 
-Button::Button(lv_obj_t* display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char* colorInput, const char* colorTextInput, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::PushButton, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput), isPressed(false), callback(f), arguments(arguments) {  
+Button::Button(lv_obj_t* display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char* colorInput, const char* colorTextInput, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::PushButton, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput), isPressed(false), callback(f ? f : Widget::default_func), arguments(arguments) {  
 
 }
 
@@ -45,7 +45,11 @@ void Button::event_cb(lv_event_t * event){
     switch(code){
         case LV_EVENT_PRESSED:
             btn->press();
-            btn->callback(event, btn->arguments);
+            if (btn->callback){
+                btn->callback(event, btn->arguments);
+            } else if (WIDGETDEBUG) {
+                Serial.println("Fonction NULL");
+            }
             break;
         case LV_EVENT_CLICKED:
             btn->release();

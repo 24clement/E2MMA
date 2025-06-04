@@ -1,6 +1,7 @@
+#include <lvgl.h>
 #include "slider.h"
 
-Slider::Slider(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char* colorInput, const char* colorTextInput, int start_value, int end_value, int index, const char* colorIndicatorInput, const char* colorBackgroundInput, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::Slider, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput), start_value(start_value), end_value(end_value), index(index), callback(f), arguments(arguments) {
+Slider::Slider(lv_obj_t * display, int pos_x, int pos_y, int size_x, int size_y, bool hiden, const char* text, const char* colorInput, const char* colorTextInput, int start_value, int end_value, int index, const char* colorIndicatorInput, const char* colorBackgroundInput, void (*f)(lv_event_t *, void *), void * arguments) : Widget(display, Widget::widgetType::Slider, pos_x, pos_y, size_x, size_y, hiden, text, colorInput, colorTextInput), start_value(start_value), end_value(end_value), index(index), callback(f ? f : Widget::default_func), arguments(arguments) {
     setColor(colorIndicatorInput, colorIndicator);
     setColor(colorBackgroundInput, colorBackground);
 }
@@ -44,7 +45,9 @@ void Slider::setIndex(int new_index){
         new_index = start_value;
     }
     index = new_index;
-    lv_slider_set_value(this->getObjects()[0], index, LV_ANIM_OFF);
+    lv_slider_set_value(this->getObjects()[0], index, LV_ANIM_ON);
+    uint32_t btn_id = 0;
+    lv_obj_send_event(this->getObjects()[0], LV_EVENT_VALUE_CHANGED, nullptr);
 }
 
 void Slider::event_cb(lv_event_t * event){
@@ -57,7 +60,9 @@ void Slider::event_cb(lv_event_t * event){
 
     slider->index = lv_slider_get_value(target_slider);
 
-    if (slider->callback != nullptr){
+    if (slider->callback){
         slider->callback(event, slider->arguments);
+    } else if (WIDGETDEBUG) {
+        Serial.println("Fonction NULL");
     }
 }

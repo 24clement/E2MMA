@@ -13,7 +13,7 @@ class Slider : public Widget{
         CallbackType callback;
         void * arguments;
     public:
-        Slider(lv_obj_t * display = nullptr, int pos_x = 0, int pos_y = 0, int size_x = 200, int size_y = 40, bool hiden = false, const char* text = "", const char* colorInput = "#000000", const char* colorTextInput = "#000000", int start_value = 0, int end_value = 255, int index = 128, const char* colorIndicatorInput = "#ffffff", const char* colorBackgroundInput = "#808080", void (*f)(lv_event_t *, void *) = Widget::default_func, void * arguments = nullptr);
+        Slider(lv_obj_t * display = nullptr, int pos_x = 0, int pos_y = 0, int size_x = 200, int size_y = 40, bool hiden = false, const char* text = "", const char* colorInput = "#000000", const char* colorTextInput = "#000000", int start_value = 0, int end_value = 255, int index = 128, const char* colorIndicatorInput = "#ffffff", const char* colorBackgroundInput = "#808080", void (*f)(lv_event_t *, void *) = nullptr, void * arguments = nullptr);
         void draw();
         int getColorIndicatorR() {return colorIndicator[0];}
         int getColorIndicatorG() {return colorIndicator[1];}

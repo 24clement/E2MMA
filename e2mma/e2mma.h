@@ -55,12 +55,15 @@ private:
 
     void appliquerCommande(float commande);
     void initialiserSortie();
-    static void func_default(lv_event_t * event, void * args);
     static void incr_slider(lv_event_t * event, void * args);
     static void decr_slider(lv_event_t * event, void * args);
-    void set_slider_by_textarea(lv_event_t * event, void * args);
-    void incr_label(lv_event_t * event, void * args);
-    void set_slider_by_button(lv_event_t * event, void * args);
+    static void incr_slider_div_facteur_cm(lv_event_t * event, void * args);
+    static void decr_slider_div_facteur_cm(lv_event_t * event, void * args);
+    static void set_label_calc_divid_by_slider(lv_event_t * event, void * args);
+    static void set_consigne_with_label_multiply_by_slider_cm(lv_event_t * event, void * args);
+    static void set_slider_by_textarea_divid_by_cm(lv_event_t * event, void * args);
+    static void set_label_slider_double_arg(lv_event_t * event, void * args);
+
     //void collecterMesure();
 
 };
