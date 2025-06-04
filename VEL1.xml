@@ -11,7 +11,7 @@
       <width>400</width>
       <height>40</height>
       <hiden>false</hiden>
-      <text>Position</text>
+      <text>Consigne</text>
       <color>#5562e7</color>
       <colortext>0,0,0</colortext>
       <startvalue>55</startvalue>
