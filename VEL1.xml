@@ -11,7 +11,7 @@
       <width>400</width>
       <height>40</height>
       <hiden>false</hiden>
-      <text>Position</text>
+      <text>Consigne</text>
       <color>#5562e7</color>
       <colortext>0,0,0</colortext>
       <startvalue>55</startvalue>
@@ -19,6 +19,15 @@
       <index>55</index>
       <colorindicator>#5562e7</colorindicator>
       <colorbackground>128,128,128</colorbackground>
+      <action>set_consigne_with_label_multiply_by_slider_cm</action>
+      <args>
+        <arg>1</arg>
+        <arg>2</arg>
+        <arg>Consigne : </arg>
+        <arg>80</arg>
+        <arg>0.00751</arg>
+        <arg>cm</arg>
+      </args>
     </slider>
     <slider id="2">
       <x>190</x>
@@ -34,6 +43,13 @@
       <index>30</index>
       <colorindicator>#e37da5</colorindicator>
       <colorbackground>128,128,128</colorbackground>
+      <action>set_label_calc_divid_by_slider</action>
+      <args>
+        <arg>2</arg>
+        <arg>3</arg>
+        <arg>KP : </arg>
+        <arg>100.0</arg>
+      </args>
     </slider>
     <slider id="3">
       <x>190</x>
@@ -49,6 +65,13 @@
       <index>30</index>
       <colorindicator>#67e1c9</colorindicator>
       <colorbackground>128,128,128</colorbackground>
+      <action>set_label_calc_divid_by_slider</action>
+      <args>
+        <arg>3</arg>
+        <arg>4</arg>
+        <arg>KI : </arg>
+        <arg>100.0</arg>
+      </args>
     </slider>
     <slider id="4">
       <x>190</x>
@@ -64,6 +87,13 @@
       <index>0</index>
       <colorindicator>#a47de3</colorindicator>
       <colorbackground>128,128,128</colorbackground>
+      <action>set_label_calc_divid_by_slider</action>
+      <args>
+        <arg>4</arg>
+        <arg>5</arg>
+        <arg>KD : </arg>
+        <arg>100.0</arg>
+      </args>
     </slider>
     <slider id="5">
       <x>190</x>
@@ -79,6 +109,13 @@
       <index>10</index>
       <colorindicator>#ffa500</colorindicator>
       <colorbackground>128,128,128</colorbackground>
+      <action>set_label_slider_double_arg</action>
+      <args>
+        <arg>5</arg>
+        <arg>6</arg>
+        <arg>Freq : </arg>
+        <arg>ms</arg>
+      </args>
     </slider>
 
     <!-- TextArea -->
@@ -90,7 +127,13 @@
       <hiden>false</hiden>
       <text></text>
       <placeholder>Saisir la position ici</placeholder>
-      <action>func_position_txt</action>
+      <action>set_slider_by_textarea_divid_by_cm</action>
+      <args>
+        <arg>1</arg>
+        <arg>1</arg>
+        <arg>0.00751</arg>
+        <arg>80</arg>
+      </args>
     </textarea>
 
     <!-- Labels -->
@@ -101,7 +144,7 @@
       <height>40</height>
       <hiden>false</hiden>
       <text>Position actuelle : 0</text>
-      <!--color>#5562e7</color> -->
+      <color>#5562e7</color>
     </label>
     <label id="2">
       <x>600</x>
@@ -159,7 +202,12 @@
       <text>+</text>
       <color>#5562e7</color>
       <colortext>#000000</colortext>
-      <action>func_button_plus</action>
+      <action>incr_slider_div_facteur_cm</action>
+      <args>
+        <arg>1</arg>
+        <arg>0.01</arg>
+        <arg>0.00751</arg>
+      </args>
     </button>
     <button id="2">
       <x>90</x>
@@ -170,7 +218,12 @@
       <text>-</text>
       <color>#5562e7</color>
       <colortext>#000000</colortext>
-      <action>func_button_moins</action>
+      <action>decr_slider_div_facteur_cm</action>
+      <args>
+        <arg>1</arg>
+        <arg>0.01</arg>
+        <arg>0.00751</arg>
+      </args>
     </button>
     <button id="3">
       <x>10</x>
@@ -181,7 +234,11 @@
       <text>+</text>
       <color>#e37da5</color>
       <colortext>#000000</colortext>
-      <action>func_kp_plus</action>
+      <action>incr_slider</action>
+      <args>
+        <arg>2</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="4">
       <x>90</x>
@@ -192,7 +249,11 @@
       <text>-</text>
       <color>#e37da5</color>
       <colortext>#000000</colortext>
-      <action>func_kp_moins</action>
+      <action>decr_slider</action>
+      <args>
+        <arg>2</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="5">
       <x>10</x>
@@ -203,7 +264,11 @@
       <text>+</text>
       <color>#67e1c9</color>
       <colortext>#000000</colortext>
-      <action>func_ki_plus</action>
+      <action>incr_slider</action>
+      <args>
+        <arg>3</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="6">
       <x>90</x>
@@ -214,7 +279,11 @@
       <text>-</text>
       <color>#67e1c9</color>
       <colortext>#000000</colortext>
-      <action>func_ki_moins</action>
+      <action>decr_slider</action>
+      <args>
+        <arg>3</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="7">
       <x>10</x>
@@ -225,7 +294,11 @@
       <text>+</text>
       <color>#a47de3</color>
       <colortext>#000000</colortext>
-      <action>func_kd_plus</action>
+      <action>incr_slider</action>
+      <args>
+        <arg>4</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="8">
       <x>90</x>
@@ -236,7 +309,11 @@
       <text>-</text>
       <color>#a47de3</color>
       <colortext>#000000</colortext>
-      <action>func_kd_moins</action>
+      <action>decr_slider</action>
+      <args>
+        <arg>4</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="9">
       <x>10</x>
@@ -247,7 +324,11 @@
       <text>+</text>
       <color>#ffa500</color>
       <colortext>#000000</colortext>
-      <action>func_freq_plus</action>
+      <action>incr_slider</action>
+      <args>
+        <arg>5</arg>
+        <arg>1</arg>
+      </args>
     </button>
     <button id="10">
       <x>90</x>
@@ -258,7 +339,11 @@
       <text>-</text>
       <color>#ffa500</color>
       <colortext>#000000</colortext>
-      <action>func_freq_moins</action>
+      <action>decr_slider</action>
+      <args>
+        <arg>5</arg>
+        <arg>1</arg>
+      </args>
     </button>
   </ui>
 </model>
