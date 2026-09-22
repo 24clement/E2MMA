@@ -140,16 +140,26 @@ Les widgets créés à partir de la configuration XML peuvent ensuite être stoc
 
 L'un des objectifs du projet était de rendre le système facilement adaptable à plusieurs maquettes.
 
-Les interfaces peuvent donc être décrites à l'aide de **fichiers XML**.
+Les interfaces sont décrites à l'aide de **fichiers XML**. Le parser analyse la configuration sélectionnée puis permet au programme de créer dynamiquement les composants graphiques correspondants.
 
-Le parser analyse la configuration sélectionnée puis permet au programme de créer les composants graphiques correspondants.
+### Exemple : maquette VEL1
 
-Exemples présents dans le dépôt :
+Le fichier `VEL1.xml` correspond à une maquette pédagogique basée sur un vérin.  
+L'interface générée permet notamment de visualiser la position actuelle du vérin et de modifier :
 
-- `VEL1.xml`
-- `maquette_test.xml`
+- la consigne de position ;
+- le coefficient proportionnel `Kp` ;
+- le coefficient intégral `Ki` ;
+- le coefficient dérivé `Kd` ;
+- la fréquence d'échantillonnage.
 
-Cette approche permet de séparer une partie de la configuration de l'interface du code principal de l'application.
+<p align="center">
+  <img src="docs/images/vel1-interface.jpg" width="450" alt="Interface générée pour la maquette VEL1">
+</p>
+
+<p align="center">
+  <i>Interface de contrôle de la maquette VEL1 générée à partir de sa configuration XML.</i>
+</p>
 
 ---
 
