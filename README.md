@@ -6,6 +6,10 @@ E2MMA est un système embarqué permettant de **contrôler, configurer et superv
 
 L'objectif principal du projet était de proposer une solution suffisamment **modulaire** pour pouvoir adapter automatiquement l'interface et son fonctionnement à différentes maquettes, sans avoir à développer une nouvelle application pour chacune d'elles.
 
+<p align="center">
+  <img src="docs/images/e2mma-interface.jpg" width="750" alt="Interface E2MMA sur Arduino GIGA Display Shield">
+</p>
+
 ---
 
 ## Objectifs du projet
