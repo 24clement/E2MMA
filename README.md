@@ -154,7 +154,7 @@ L'interface générée permet notamment de visualiser la position actuelle du v�
 - la fréquence d'échantillonnage.
 
 <p align="center">
-  <img src="docs/images/vel1-interface.jpg" width="450" alt="Interface générée pour la maquette VEL1">
+  <img src="docs/images/vel1-interface.png" width="450" alt="Interface générée pour la maquette VEL1">
 </p>
 
 <p align="center">
